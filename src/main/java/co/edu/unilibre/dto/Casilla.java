@@ -1,0 +1,22 @@
+package co.edu.unilibre.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Casilla
+ */
+@Getter
+@Setter
+@AllArgsConstructor
+public class Casilla {
+
+	private int x;
+	private int y;
+	private int minasAdyacentes;
+	private boolean descubierta;
+	private boolean tieneBandera;
+	private boolean esMina;
+
+}
