@@ -73,7 +73,7 @@ public class PartidaDaoImp implements PartidaDao {
             long tiempoMs = res.getLong("tiempo");
             Duration tiempo = Duration.ofMillis(tiempoMs);
 
-            Partida p = new Partida(null, d, u, null, tiempo, resultado);
+            Partida p = new Partida(d, u, null, tiempo, resultado);
             p.setId(id);
             partidas.add(p);
         }
