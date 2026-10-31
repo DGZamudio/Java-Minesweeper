@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS usuarios (
-    id INT AUTOINCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS dificultades (
-    id INT AUTOINCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     minas INT NOT NULL,
     columnas INT NOT NULL,
@@ -13,22 +13,22 @@ CREATE TABLE IF NOT EXISTS dificultades (
 );
 
 CREATE TABLE IF NOT EXISTS temas (
-    id INT AUTOINCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
     bg VARCHAR(150) NOT NULL,
     fg VARCHAR(150) NOT NULL,
     mina VARCHAR(150) NOT NULL,
     bandera VARCHAR(150) NOT NULL,
-    bgImage VARCHAR(150) NOT NULL
+    bg_image VARCHAR(150) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS partidas (
-    id INT AUTOINCREMENT PRIMARY KEY,
-    usuario_id INT UNIQUE NOT NULL,
-    dificultad_id INT UNIQUE NOT NULL,
+    id SERIAL PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    dificultad_id INT NOT NULL,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     tiempo BIGINT NOT NULL,
-    resultado ENUM(GANADOR, PERDEDOR, EN_PROGRESO) NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
-    FORGEIN KEY (dificultad_id) REFERENCES dificultades(id)
+    resultado VARCHAR(20) NOT NULL CHECK (resultado IN ('GANADOR', 'PERDEDOR', 'EN_PROGRESO')),
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (dificultad_id) REFERENCES dificultades(id) ON DELETE CASCADE
 );

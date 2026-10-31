@@ -19,6 +19,7 @@ public class GestorConexiones {
     private static HikariDataSource dataSource;
 
     private static final Dotenv dotenv = Dotenv.configure()
+            .directory("./")
             .ignoreIfMissing()
             .load();
 
@@ -42,6 +43,7 @@ public class GestorConexiones {
 
     static {
         HikariConfig config = new HikariConfig();
+        config.setDriverClassName("org.postgresql.Driver");
         config.setJdbcUrl(getDbUrl());
         config.setUsername(getDbUser());
         config.setPassword(getDbPassword());

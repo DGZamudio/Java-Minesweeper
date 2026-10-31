@@ -1,7 +1,10 @@
 package co.edu.unilibre.gui;
 
 import co.edu.unilibre.dto.Casilla;
+import co.edu.unilibre.dto.Dificultad;
 import co.edu.unilibre.dto.Partida;
+import co.edu.unilibre.dto.Tema;
+import co.edu.unilibre.dto.Usuario;
 import co.edu.unilibre.servicios.JuegoImp;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,7 +30,7 @@ public class PanelTablero {
     private JuegoImp juego;
     private Partida partidaActual;
 
-    public PanelTablero() {
+    public PanelTablero(Dificultad dificultad, Usuario usuario, Tema tema) {
         this.partidaActual = new Partida(dificultad, usuario, tema);
         this.juego = new JuegoImp(this.partidaActual);
         this.vistaPrincipal = new BorderPane();

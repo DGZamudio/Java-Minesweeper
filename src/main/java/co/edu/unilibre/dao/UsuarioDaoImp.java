@@ -42,13 +42,15 @@ public class UsuarioDaoImp implements UsuarioDao {
             stmt.setString(1, username);
             ResultSet res = stmt.executeQuery();
 
-            int id = res.getInt("id");
-            String passHash = res.getString("password");
+            if (res.next()) {
+                int id = res.getInt("id");
+                String passHash = res.getString("password");
 
-            if (BCrypt.checkpw(password, passHash)) {
-                Usuario usr = new Usuario(username);
-                usr.setId(id);
-                return usr;
+                if (BCrypt.checkpw(password, passHash)) {
+                    Usuario usr = new Usuario(username);
+                    usr.setId(id);
+                    return usr;
+                }
             }
             return null;
         }
