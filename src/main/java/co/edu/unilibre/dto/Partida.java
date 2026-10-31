@@ -20,16 +20,15 @@ public class Partida {
 	private Resultado resultado;
 	private Tema tema;
 
-	public Partida(Casilla[][] tablero, Dificultad dificultad, Usuario usuario, Tema tema) {
-        this.tablero = tablero;
+	public Partida(Dificultad dificultad, Usuario usuario, Tema tema) {
+        this.tablero = new Casilla[dificultad.getFilas()][dificultad.getColumnas()];
         this.dificultad = dificultad;
         this.usuario = usuario;
         this.tema = tema;
         this.resultado = Resultado.EN_PROGRESO;
 	}
 
-	public Partida(Casilla[][] tablero, Dificultad dificultad, Usuario usuario, Tema tema, Duration tiempo, Resultado resultado) {
-	    this.tablero = tablero;
+	public Partida(Dificultad dificultad, Usuario usuario, Tema tema, Duration tiempo, Resultado resultado) {
 		this.dificultad = dificultad;
 		this.usuario = usuario;
 		this.tema = tema;

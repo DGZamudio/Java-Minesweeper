@@ -2,6 +2,9 @@ package co.edu.unilibre.servicios;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import co.edu.unilibre.dto.Casilla;
 import co.edu.unilibre.dto.Partida;
@@ -90,7 +93,37 @@ public class JuegoImp implements Juego {
 
 	@Override
 	public void iniciarJuego(Casilla casilla) {
+        int x = casilla.getX();
+        int y = casilla.getY();
+        int filas = partida.getDificultad().getFilas();
+        int columnas = partida.getDificultad().getColumnas();
+        Casilla[][] tablero = partida.getTablero();
 
+        List<int[]> posiciones = new ArrayList<>();
+
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+
+                // Si la distancia horizontal y vertical es mayor a 1, NO es la casilla ni una de sus 8 vecinas
+                boolean esZonaSegura = Math.abs(i - x) <= 1 && Math.abs(j - y) <= 1;
+
+                if (!esZonaSegura) {
+                    posiciones.add(new int[]{i, j});
+                }
+            }
+        }
+
+        // Barajar la lista de posiciones
+        Collections.shuffle(posiciones);
+
+        // Posicionar minas
+        for (int i = 0; i < partida.getDificultad().getMinas(); i++) {
+            int[] localPos = posiciones.get(i);
+            tablero[localPos[0]][localPos[1]].setMina(true);
+        }
+
+        // Iniciar descubrimiento
+        descubrirCasilla(casilla);
 	}
 
 	@Override
@@ -153,9 +186,9 @@ public class JuegoImp implements Juego {
 	public void alternarBandera(Casilla casilla) {
 	    if (!casilla.isDescubierta()) {
 			casilla.setBandera(!casilla.isBandera());
-			this.banderasRestantes --;
+			this.banderasRestantes--;
 			if (casilla.isMina()) {
-			    this.minasRestantes --;
+			    this.minasRestantes--;
 			}
 		}
 	}
