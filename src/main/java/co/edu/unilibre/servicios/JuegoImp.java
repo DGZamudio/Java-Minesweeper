@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import co.edu.unilibre.dto.Casilla;
+import co.edu.unilibre.dto.Dificultad;
 import co.edu.unilibre.dto.Partida;
 import co.edu.unilibre.dto.Resultado;
 
@@ -40,7 +41,7 @@ public class JuegoImp implements Juego {
 		int[][] coordenadas = {{x,y+1}, {x,y-1}, {x+1, y}, {x-1, y}, {x+1, y+1}, {x-1, y+1}, {x-1, y-1}, {x+1, y-1}};
 
 		for (int i = 0; i < coordenadas.length; i++) {
-            if (coordenadas[i][0] < 0 || coordenadas[i][0] > filas || coordenadas[i][1] < 0 || coordenadas[i][1] > columnas) {
+            if (coordenadas[i][0] <= 0 || coordenadas[i][0] >= filas || coordenadas[i][1] <= 0 || coordenadas[i][1] >= columnas) {
                 continue;
             } else {
                 if (tablero[coordenadas[i][0]][coordenadas[i][1]].isMina()) {
@@ -53,6 +54,7 @@ public class JuegoImp implements Juego {
 	}
 
 	private void esparcirCasillasVacias(Casilla casilla) {
+	    if (casilla.isDescubierta()) return;
 	    if (!casilla.isMina()) {
 			casilla.setDescubierta(true);
                Casilla[][] tablero = partida.getTablero();
@@ -69,7 +71,7 @@ public class JuegoImp implements Juego {
                 } else {
                     if (!tablero[coordenadas[i][0]][coordenadas[i][1]].isMina()) {
                         if (obtenerAdyacentes(tablero[coordenadas[i][0]][coordenadas[i][1]]) == 0) {
-                            esparcirCasillasVacias(casilla);
+                            esparcirCasillasVacias(tablero[coordenadas[i][0]][coordenadas[i][1]]);
                         }
                     }
                 }
@@ -80,6 +82,12 @@ public class JuegoImp implements Juego {
 	private void verificarPartida() {
 	    if (minasRestantes == 0) {
 			terminarJuego(Resultado.GANADOR);
+		}
+	}
+
+	private void verificarCoordenadasValidas(Dificultad dificultad, Casilla casilla) {
+	    if (casilla.getX() > dificultad.getFilas() - 1 || casilla.getX() < 0 || casilla.getY() > dificultad.getColumnas() - 1 || casilla.getY() < 0) {
+			throw new RuntimeException("Casilla fuera de los limites");
 		}
 	}
 
@@ -134,6 +142,12 @@ public class JuegoImp implements Juego {
 
 	@Override
 	public void descubrirCasilla(Casilla casilla) {
+	    verificarCoordenadasValidas(this.partida.getDificultad(), casilla);
+
+		if (this.tiempoInicio == null) {
+		    tiempoInicio = Instant.now();
+		}
+
 	    if (casilla.isMina()) {
 			terminarJuego(Resultado.PERDEDOR);
 		}
@@ -152,6 +166,8 @@ public class JuegoImp implements Juego {
 
 	@Override
 	public void hacerChording(Casilla casilla) {
+	    verificarCoordenadasValidas(this.partida.getDificultad(), casilla);
+
 	    Casilla[][] tablero = partida.getTablero();
 	    int x = casilla.getX();
 		int y = casilla.getY();
@@ -184,11 +200,21 @@ public class JuegoImp implements Juego {
 
 	@Override
 	public void alternarBandera(Casilla casilla) {
+	    verificarCoordenadasValidas(this.partida.getDificultad(), casilla);
+
 	    if (!casilla.isDescubierta()) {
 			casilla.setBandera(!casilla.isBandera());
-			this.banderasRestantes--;
-			if (casilla.isMina()) {
-			    this.minasRestantes--;
+
+			if (casilla.isBandera()) {
+			    this.banderasRestantes++;
+				if (casilla.isMina()) {
+				    this.minasRestantes++;
+				}
+			} else {
+			    this.banderasRestantes--;
+				if (casilla.isMina()) {
+				    this.minasRestantes--;
+				}
 			}
 		}
 	}

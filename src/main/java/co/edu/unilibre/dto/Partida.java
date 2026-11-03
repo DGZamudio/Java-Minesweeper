@@ -26,6 +26,12 @@ public class Partida {
         this.usuario = usuario;
         this.tema = tema;
         this.resultado = Resultado.EN_PROGRESO;
+
+        for (int i = 0; i < dificultad.getFilas(); i++) {
+            for (int j = 0; j < dificultad.getColumnas(); j++) {
+                tablero[i][j] = new Casilla(i, j);
+            }
+        }
 	}
 
 	public Partida(Dificultad dificultad, Usuario usuario, Tema tema, Duration tiempo, Resultado resultado) {
