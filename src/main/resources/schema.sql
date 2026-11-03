@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 CREATE TABLE IF NOT EXISTS dificultades (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
     minas INT NOT NULL,
     columnas INT NOT NULL,
     filas INT NOT NULL

@@ -16,10 +16,9 @@ public class UsuarioDaoImp implements UsuarioDao {
 
 	@Override
 	public void registrarUsuario(Usuario usr) {
-	    GestorConexiones gc = new GestorConexiones();
-		String sql = "INSERT INTO usuarios (username, password) VALUES (?, ?);";
+		String sql = "INSERT INTO usuarios (username, password_hash) VALUES (?, ?);";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, usr.getUsername());
@@ -34,17 +33,16 @@ public class UsuarioDaoImp implements UsuarioDao {
 
 	@Override
 	public Usuario autenticarUsuario(String username, String password) {
-	    GestorConexiones gc = new GestorConexiones();
 		String sql = "SELECT * FROM usuarios WHERE username = ?;";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             ResultSet res = stmt.executeQuery();
 
             if (res.next()) {
                 int id = res.getInt("id");
-                String passHash = res.getString("password");
+                String passHash = res.getString("password_hash");
 
                 if (BCrypt.checkpw(password, passHash)) {
                     Usuario usr = new Usuario(username);
@@ -55,17 +53,16 @@ public class UsuarioDaoImp implements UsuarioDao {
             return null;
         }
         catch (SQLException e) {
-            throw new RuntimeException("Error al registrar al usuario", e);
+            throw new RuntimeException("Error al autenticar al usuario", e);
         }
 
 	}
 
 	@Override
 	public void actualizarUsuario(int id, Usuario usr) {
-	    GestorConexiones gc = new GestorConexiones();
-		String sql = "UPDATE usuarios SET username = ?, password = ? WHERE id = ?;";
+		String sql = "UPDATE usuarios SET username = ?, password_hash = ? WHERE id = ?;";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, usr.getUsername());
@@ -75,16 +72,15 @@ public class UsuarioDaoImp implements UsuarioDao {
             stmt.executeUpdate();
         }
         catch (SQLException e) {
-            throw new RuntimeException("Error al registrar al usuario", e);
+            throw new RuntimeException("Error al actualizar al usuario", e);
         }
 	}
 
 	@Override
 	public void borrarUsuario(int id) {
-        GestorConexiones gc = new GestorConexiones();
         String sql = "DELETE FROM usuarios WHERE id = ?;";
 
-        try (Connection conn = gc.obtenerConexion();
+        try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -92,7 +88,7 @@ public class UsuarioDaoImp implements UsuarioDao {
             stmt.executeUpdate();
         }
         catch (SQLException e) {
-            throw new RuntimeException("Error al registrar al usuario", e);
+            throw new RuntimeException("Error al borrar al usuario", e);
         }
 	}
 

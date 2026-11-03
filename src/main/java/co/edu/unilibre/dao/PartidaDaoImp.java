@@ -20,10 +20,9 @@ public class PartidaDaoImp implements PartidaDao {
 
 	@Override
 	public void guardarPartida(Partida partida) {
-	    GestorConexiones gc = new GestorConexiones();
 		String sql = "INSERT INTO partidas (usuario_id, dificultad_id, tiempo, resultado) VALUES (?, ?, ?, ?);";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, partida.getUsuario().getId());
@@ -39,7 +38,6 @@ public class PartidaDaoImp implements PartidaDao {
 
 	@Override
 	public List<Partida> obtenerPartidas() {
-	    GestorConexiones gc = new GestorConexiones();
 		List<Partida> partidas = new ArrayList<>();
 		String sql = "SELECT p.id, p.resultado, p.tiempo, " +
                  "u.id AS id_usr, u.username, " +
@@ -48,7 +46,7 @@ public class PartidaDaoImp implements PartidaDao {
                  "JOIN usuarios u ON u.id = p.usuario_id " +
                  "JOIN dificultades d ON d.id = p.dificultad_id;";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
          PreparedStatement stmt = conn.prepareStatement(sql);
          ResultSet res = stmt.executeQuery()) {
 
@@ -87,10 +85,9 @@ public class PartidaDaoImp implements PartidaDao {
 
 	@Override
 	public void borrarPartida(int id) {
-	    GestorConexiones gc = new GestorConexiones();
 		String sql = "DELETE FROM partidas WHERE id = ?;";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);

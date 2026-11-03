@@ -16,10 +16,9 @@ public class DificultadDaoImp implements DificultadDao {
 
 	@Override
 	public void guardarDificultad(Dificultad dificultad) {
-	    GestorConexiones gc = new GestorConexiones();
-		String sql = "INSERT INTO (nombre, minas, filas, columnas) dificultades VALUES (?, ?, ?, ?);";
+		String sql = "INSERT INTO dificultades (nombre, minas, filas, columnas) VALUES (?, ?, ?, ?);";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
 		PreparedStatement stmt = conn.prepareStatement(sql)) {
 		    stmt.setString(1, dificultad.getNombre());
 			stmt.setInt(2, dificultad.getMinas());
@@ -34,11 +33,10 @@ public class DificultadDaoImp implements DificultadDao {
 
 	@Override
 	public List<Dificultad> listarDificultades() {
-	    GestorConexiones gc = new GestorConexiones();
 		String sql = "SELECT * FROM dificultades;";
 		List<Dificultad> dificultades = new ArrayList<>();
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		ResultSet res = stmt.executeQuery()) {
 		    while (res.next()) {
@@ -62,10 +60,9 @@ public class DificultadDaoImp implements DificultadDao {
 
 	@Override
 	public void actualizarDificultad(int id, Dificultad dificultad) {
-	    GestorConexiones gc = new GestorConexiones();
 		String sql = "UPDATE dificultades SET nombre = ?, minas = ?, columnas = ?, filas = ? WHERE id = ?;";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
 		PreparedStatement stmt = conn.prepareStatement(sql)) {
 		    stmt.setString(1, dificultad.getNombre());
 			stmt.setInt(2, dificultad.getMinas());
@@ -81,10 +78,9 @@ public class DificultadDaoImp implements DificultadDao {
 
 	@Override
 	public void borrarDificultad(int id) {
-        GestorConexiones gc = new GestorConexiones();
-        String sql = "DELETE FROM usuarios WHERE id = ?;";
+        String sql = "DELETE FROM dificultades WHERE id = ?;";
 
-        try (Connection conn = gc.obtenerConexion();
+        try (Connection conn = GestorConexiones.obtenerConexion();
         PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();

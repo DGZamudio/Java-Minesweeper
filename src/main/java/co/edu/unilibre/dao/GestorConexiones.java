@@ -47,6 +47,7 @@ public class GestorConexiones {
         config.setJdbcUrl(getDbUrl());
         config.setUsername(getDbUser());
         config.setPassword(getDbPassword());
+        config.setAutoCommit(true);
 
         // Configuraciones opcionales de optimización
         config.setMaximumPoolSize(10);
@@ -55,11 +56,11 @@ public class GestorConexiones {
         dataSource = new HikariDataSource(config);
     }
 
-    public Connection obtenerConexion() throws SQLException {
+    public static Connection obtenerConexion() throws SQLException {
         return dataSource.getConnection();
     }
 
-    public void inicializarBaseDeDatos(Connection conn) {
+    public static void inicializarBaseDeDatos(Connection conn) {
         try (InputStream is = GestorConexiones.class.getClassLoader().getResourceAsStream("schema.sql")) {
             if (is == null) {
                 throw new RuntimeException("No se encontró el archivo schema.sql en resources");

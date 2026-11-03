@@ -11,9 +11,8 @@ import javafx.application.Application;
  */
 public class Main {
     public static void main(String[] args) {
-        GestorConexiones gc = new GestorConexiones();
         try {
-            gc.inicializarBaseDeDatos(gc.obtenerConexion());
+            GestorConexiones.inicializarBaseDeDatos(GestorConexiones.obtenerConexion());
         } catch (SQLException e) {
             throw new RuntimeException("Error al conectar a la base de datos", e);
         }

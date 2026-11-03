@@ -16,10 +16,9 @@ public class TemaDaoImp implements TemaDao {
 
 	@Override
 	public void crearTema(Tema tema) {
-	    GestorConexiones gc = new GestorConexiones();
-		String sql = "INSERT INTO temas (nombre, bg, fg, mina, bandera, bgImage) VALUES (?, ?, ?, ?, ?, ?);";
+		String sql = "INSERT INTO temas (nombre, bg, fg, mina, bandera, bg_image) VALUES (?, ?, ?, ?, ?, ?);";
 
-		try (Connection conn = gc.obtenerConexion();
+		try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, tema.getNombre());
@@ -31,18 +30,17 @@ public class TemaDaoImp implements TemaDao {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-		    throw new RuntimeException("Error al guardar la partida", e);
+		    throw new RuntimeException("Error al guardar el tema", e);
 		}
 	}
 
 	@Override
 	public List<Tema> listarTemas() {
-    	GestorConexiones gc = new GestorConexiones();
         List<Tema> temas = new ArrayList<>();
         String sql = "SELECT * " +
                 "FROM temas;";
 
-        try (Connection conn = gc.obtenerConexion();
+        try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet res = stmt.executeQuery()) {
 
@@ -53,14 +51,14 @@ public class TemaDaoImp implements TemaDao {
                 String fg = res.getString("fg");
                 String mina = res.getString("mina");
                 String bandera = res.getString("bandera");
-                String bgImage = res.getString("bgImage");
+                String bgImage = res.getString("bg_image");
                 Tema t = new Tema(nombre, bg, fg, mina, bandera, bgImage);
                 t.setId(id);
                 temas.add(t);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error al consultar las partidas en la base de datos", e);
+            throw new RuntimeException("Error al listar los temas de la base de datos", e);
         }
 
 		return temas;
@@ -68,10 +66,9 @@ public class TemaDaoImp implements TemaDao {
 
 	@Override
 	public void actualizarTema(int id, Tema tema) {
-        GestorConexiones gc = new GestorConexiones();
         String sql = "UPDATE temas SET nombre = ?, bg = ?, fg = ?, mina = ?, bandera = ?, bg_image = ? WHERE id = ?;";
 
-        try (Connection conn = gc.obtenerConexion();
+        try (Connection conn = GestorConexiones.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, tema.getNombre());
@@ -90,10 +87,9 @@ public class TemaDaoImp implements TemaDao {
 
 	@Override
 	public void borrarTema(int id) {
-    	GestorConexiones gc = new GestorConexiones();
         String sql = "DELETE FROM temas WHERE id = ?;";
 
-        try (Connection conn = gc.obtenerConexion();
+        try (Connection conn = GestorConexiones.obtenerConexion();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
