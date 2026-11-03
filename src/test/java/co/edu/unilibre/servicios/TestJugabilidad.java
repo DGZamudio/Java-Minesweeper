@@ -1,13 +1,10 @@
-package co.edu.unilibre.dao;
+package co.edu.unilibre.servicios;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.time.Duration;
-import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,8 +17,6 @@ import co.edu.unilibre.dto.Partida;
 import co.edu.unilibre.dto.Resultado;
 import co.edu.unilibre.dto.Tema;
 import co.edu.unilibre.dto.Usuario;
-import co.edu.unilibre.servicios.Juego;
-import co.edu.unilibre.servicios.JuegoImp;
 
 /**
  * TestJugabilidad
@@ -31,14 +26,16 @@ public class TestJugabilidad {
 
     private Juego juego;
     private Partida partida;
+    private Usuario usuario;
+    private Tema tema;
     private Dificultad dificultad;
 
     @BeforeEach
     void setUp() {
         // Tablero de 5x5 con 3 minas para pruebas controladas
         dificultad = new Dificultad("Prueba", 3, 5, 5);
-        Usuario usuario = new Usuario("Pablo");
-        Tema tema = new Tema("Tema test", "", "", "", "", "");
+        usuario = new Usuario("Pablo");
+        tema = new Tema("Tema test", "", "", "", "", "");
 
         partida = new Partida(dificultad, usuario, tema);
 
@@ -114,6 +111,18 @@ public class TestJugabilidad {
     // ==========================================
     // 2. CASOS DE FALLO Y EXCEPCIONES (FAIL PATHS)
     // ==========================================
+
+    @Test
+    @DisplayName("Fallo (RF-01): El numero de minas no puede ser mayor al numero de casillas -9")
+    public void failDificultadImposible() {
+        dificultad = new Dificultad("Imposible", 99, 10, 10);
+        partida = new Partida(dificultad, usuario, tema);
+        juego = new JuegoImp(partida);
+
+        Casilla primerClic = partida.getTablero()[2][2];
+
+        assertThrows(RuntimeException.class, () -> juego.iniciarJuego(primerClic));
+    }
 
     @Test
     @DisplayName("Fallo: Debe lanzar excepción si las coordenadas de la casilla están fuera de límites")

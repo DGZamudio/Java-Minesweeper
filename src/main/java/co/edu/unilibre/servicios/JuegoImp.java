@@ -91,6 +91,13 @@ public class JuegoImp implements Juego {
 		}
 	}
 
+	private void verificarTableroValido(Dificultad dificultad) {
+	    int minasMaximas = dificultad.getFilas() * dificultad.getColumnas() - 9;
+	    if (dificultad.getMinas() > minasMaximas) {
+			throw new RuntimeException("Tablero no valido, mas minas que casillas");
+		}
+	}
+
 	public int getBanderasRestantes() {
 	    return this.banderasRestantes;
 	}
@@ -101,10 +108,13 @@ public class JuegoImp implements Juego {
 
 	@Override
 	public void iniciarJuego(Casilla casilla) {
+	    Dificultad dificultadActual = partida.getDificultad();
+	    verificarTableroValido(dificultadActual);
+
         int x = casilla.getX();
         int y = casilla.getY();
-        int filas = partida.getDificultad().getFilas();
-        int columnas = partida.getDificultad().getColumnas();
+        int filas = dificultadActual.getFilas();
+        int columnas = dificultadActual.getColumnas();
         Casilla[][] tablero = partida.getTablero();
 
         List<int[]> posiciones = new ArrayList<>();
@@ -125,7 +135,7 @@ public class JuegoImp implements Juego {
         Collections.shuffle(posiciones);
 
         // Posicionar minas
-        for (int i = 0; i < partida.getDificultad().getMinas(); i++) {
+        for (int i = 0; i < dificultadActual.getMinas(); i++) {
             int[] localPos = posiciones.get(i);
             tablero[localPos[0]][localPos[1]].setMina(true);
         }
