@@ -14,6 +14,7 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -186,6 +187,18 @@ public class TestPartidaDao {
                 Statement stmt = conn.createStatement()) {
             // Elimina únicamente las partidas creadas por el usuario de prueba
             stmt.executeUpdate("DELETE FROM partidas WHERE usuario_id = " + usuarioPrueba.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterAll
+    void limpiarBaseDatosTotal() {
+        try (Connection conn = GestorConexiones.obtenerConexion();
+                Statement stmt = conn.createStatement()){
+            // Elimina el usuario y la dificultad de testeo
+            stmt.executeUpdate("DELETE FROM usuarios WHERE usuario_id = " + usuarioPrueba.getId());
+            stmt.executeUpdate("DELETE FROM dificultades WHERE usuario_id = " + dificultadPrueba.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
