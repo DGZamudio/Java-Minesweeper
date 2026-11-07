@@ -1,102 +1,117 @@
 package co.edu.unilibre.gui;
 
+import java.util.List;
+
 import co.edu.unilibre.dao.DificultadDao;
 import co.edu.unilibre.dao.DificultadDaoImp;
 import co.edu.unilibre.dao.TemaDao;
 import co.edu.unilibre.dao.TemaDaoImp;
+import co.edu.unilibre.dao.UsuarioDao;
+import co.edu.unilibre.dao.UsuarioDaoImp;
 import co.edu.unilibre.dto.Dificultad;
 import co.edu.unilibre.dto.Tema;
 import co.edu.unilibre.dto.Usuario;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 
 /**
  * VistaPrincipal
  */
 public class VistaPrincipal extends Application {
 
-    private BorderPane contenedorRaiz;
-    private Usuario usuarioAutenticado;
+    // Vistas
+    private VistaLogin vistaLogin;
+    private VistaRegister vistaRegister;
+    private PanelTablero panelTablero;
+    private VistaConfiguracion vistaConfiguracion;
 
-    // Servicios y DAOs
+    // Servicios
+    private UsuarioDao usuarioDao;
     private DificultadDao dificultadDao;
     private TemaDao temaDao;
 
+    // Estados
+    private Usuario usuario;
+
     public VistaPrincipal() {
-        this.contenedorRaiz = new BorderPane();
+        this.usuarioDao = new UsuarioDaoImp();
         this.dificultadDao = new DificultadDaoImp();
         this.temaDao = new TemaDaoImp();
-        mostrarLogin();
     }
 
-    // Pantalla de inicio de sesion
-    public void mostrarLogin() {
-        VistaLogin loginView = new VistaLogin(this);
-        contenedorRaiz.setCenter(loginView.getVista());
-    }
+    private void cargarPartida(Dificultad dificultad, Tema tema) {
+        this.panelTablero = new PanelTablero(dificultad, this.usuario, tema);
 
-    public void alAutenticarUsuario(Usuario usuario) {
-        this.usuarioAutenticado = usuario;
-        mostrarConfiguracionJuego();
-    }
-
-    // Pantalla de configuracion
-    public void mostrarConfiguracionJuego() {
-        VBox panelConfig = new VBox(15);
-
-        ComboBox<Dificultad> comboDificultad = new ComboBox<>();
-        comboDificultad.getItems().addAll(dificultadDao.listarDificultades());
-
-        ComboBox<Tema> comboTema = new ComboBox<>();
-        comboTema.getItems().addAll(temaDao.listarTemas());
-
-        Button btnEmpezar = new Button("¡Jugar!");
-        btnEmpezar.setOnAction(e -> {
-            Dificultad dif = comboDificultad.getValue();
-            Tema tema = comboTema.getValue();
-            mostrarTablero(dif, tema);
+        this.panelTablero.setOnReiniciar(() -> {
+            System.out.println("Reiniciando el mismo nivel...");
+            cargarPartida(dificultad, tema);
         });
 
-        panelConfig.getChildren().addAll(
-            new Label("Bienvenido " + usuarioAutenticado.getUsername()),
-            new Label("Selecciona Dificultad:"), comboDificultad,
-            new Label("Selecciona Tema:"), comboTema,
-            btnEmpezar
-        );
+        this.panelTablero.setOnNuevaPartida(() -> {
+            ViewManager.loadView(vistaConfiguracion);
+        });
 
-        contenedorRaiz.setCenter(panelConfig);
-    }
-
-    // Pantalla de tablero
-    public void mostrarTablero(Dificultad dificultad, Tema tema) {
-        PanelTablero panelTablero = new PanelTablero(dificultad, usuarioAutenticado, tema);
-        contenedorRaiz.setCenter(panelTablero.getVista());
-    }
-
-    // Pantalla de clasificación
-    public void mostrarClasificacion() {
-        PanelClasificacion clasificacionView = new PanelClasificacion(this);
-        contenedorRaiz.setCenter(clasificacionView.getVista());
-    }
-
-    public BorderPane getContenedorRaiz() {
-        return contenedorRaiz;
+        ViewManager.loadView(this.panelTablero);
     }
 
     @Override
     public void start(Stage primaryStage) {
-        VistaPrincipal vistaPrincipal = new VistaPrincipal();
-        Scene scene = new Scene(vistaPrincipal.getContenedorRaiz(), 600, 650);
+        BorderPane mainLayout = new BorderPane();
+        ViewManager.setRootLayout(mainLayout);
 
-        primaryStage.setTitle("Buscaminas Unilibre");
+        // VistaConfiguración
+        List<Dificultad> dificultades = dificultadDao.listarDificultades();
+        List<Tema> temas = temaDao.listarTemas();
+
+        vistaConfiguracion = new VistaConfiguracion(dificultades, temas);
+        vistaConfiguracion.setOnIniciarPartida((dificultad, tema) -> {
+            cargarPartida(dificultad, tema);
+        });
+
+        // VistaRegister
+        vistaRegister = new VistaRegister();
+        vistaRegister.setOnRegisterUser((usuario) -> {
+            try {
+                usuarioDao.registrarUsuario(usuario);
+                this.usuario = usuario;
+                ViewManager.loadView(vistaConfiguracion);
+            } catch(RuntimeException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Error al crear el usuario");
+                alert.show();
+            }
+        });
+
+
+        // Carga inicial: VistaLogin
+        vistaLogin = new VistaLogin();
+        vistaLogin.setOnAutenticar((usuario, password) -> {
+            // Se ejecuta cuando el usuario presiona el botón en la vista
+            this.usuario = usuarioDao.autenticarUsuario(usuario, password);
+
+            if (this.usuario != null) {
+                if (vistaConfiguracion != null) {
+                    ViewManager.loadView(vistaConfiguracion);
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Credenciales inválidas");
+                alert.show();
+            }
+        });
+        vistaLogin.setOnIrARegistro(() -> {
+            ViewManager.loadView(vistaRegister);
+        });
+
+        ViewManager.loadView(vistaLogin);
+
+
+        // Configuracion de interfaz
+        Scene scene = new Scene(mainLayout, 600, 650);
+        primaryStage.setTitle("BuscaMinas");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
 }

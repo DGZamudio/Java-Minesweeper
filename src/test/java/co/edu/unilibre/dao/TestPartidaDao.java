@@ -50,8 +50,7 @@ public class TestPartidaDao {
         String username = "user_partida_test";
         String password = "Contraseña segura";
 
-        Usuario tempUser = new Usuario(username);
-        tempUser.setPassword(password);
+        Usuario tempUser = new Usuario(username, password);
         usuarioDao.registrarUsuario(tempUser);
         this.usuarioPrueba = usuarioDao.autenticarUsuario(username, password);
 
@@ -144,8 +143,7 @@ public class TestPartidaDao {
     @Test
     @DisplayName("Fallo: Debe lanzar excepción al guardar una partida con usuario no persistido en BD (Violación FK)")
     public void failGuardarPartidaUsuarioInexistente() {
-        Usuario usuarioFantasma = new Usuario("fantasma");
-        usuarioFantasma.setId(-999); // ID inexistente en la tabla usuarios
+        Usuario usuarioFantasma = new Usuario(-999, "fantasma");
 
         Partida partida = new Partida(dificultadPrueba, usuarioFantasma, null, Duration.ofSeconds(10), Resultado.GANADOR);
 
@@ -186,7 +184,7 @@ public class TestPartidaDao {
         try (Connection conn = GestorConexiones.obtenerConexion();
                 Statement stmt = conn.createStatement()) {
             // Elimina únicamente las partidas creadas por el usuario de prueba
-            stmt.executeUpdate("DELETE FROM partidas WHERE usuario_id = " + usuarioPrueba.getId());
+            stmt.executeUpdate("DELETE FROM partidas WHERE id = " + usuarioPrueba.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -197,8 +195,8 @@ public class TestPartidaDao {
         try (Connection conn = GestorConexiones.obtenerConexion();
                 Statement stmt = conn.createStatement()){
             // Elimina el usuario y la dificultad de testeo
-            stmt.executeUpdate("DELETE FROM usuarios WHERE usuario_id = " + usuarioPrueba.getId());
-            stmt.executeUpdate("DELETE FROM dificultades WHERE usuario_id = " + dificultadPrueba.getId());
+            stmt.executeUpdate("DELETE FROM usuarios WHERE id = " + usuarioPrueba.getId());
+            stmt.executeUpdate("DELETE FROM dificultades WHERE id = " + dificultadPrueba.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -57,8 +57,7 @@ public class PartidaDaoImp implements PartidaDao {
 
             int usrId = res.getInt("id_usr");
             String nombreU = res.getString("username");
-            Usuario u = new Usuario(nombreU);
-            u.setId(usrId);
+            Usuario u = new Usuario(usrId, nombreU);
 
             int dfId = res.getInt("df_id");
             String nombreD = res.getString("nombre");

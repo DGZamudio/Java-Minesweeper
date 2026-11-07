@@ -12,6 +12,13 @@ CREATE TABLE IF NOT EXISTS dificultades (
     filas INT NOT NULL
 );
 
+INSERT INTO dificultades (nombre, minas, columnas, filas)
+VALUES
+('Fácil', 10, 9, 9),
+('Medio', 40, 16, 16),
+('Difícil', 99, 30, 16)
+ON CONFLICT (nombre) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS temas (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,

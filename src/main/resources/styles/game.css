@@ -1,0 +1,156 @@
+/* Ancho fijo para el panel lateral */
+.sidebar-container {
+    -fx-min-width: 260px;
+    -fx-pref-width: 260px;
+}
+
+/* Tarjetas blancas principales */
+.sidebar-card {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 20px;
+}
+
+/* Títulos naranjas/terracota en mayúsculas (DETALLES / CONTROLES) */
+.sidebar-title-uppercase {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #D97706; /* Tono terracota/naranja de la imagen */
+    -fx-letter-spacing: 1.5px;
+}
+
+/* Líneas separadoras grises */
+.sidebar-divider {
+    -fx-background-color: #E2E8F0;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+}
+
+/* Etiquetas del lado izquierdo (Dificultad, Tablero, Minas) */
+.sidebar-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+
+/* Valores en negrita a la derecha (Medio, 16 x 16, 40) */
+.sidebar-value-bold {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+/* Títulos de Controles (Clic izquierdo, Clic derecho) */
+.sidebar-control-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #334155;
+}
+
+/* Descripción de Controles */
+.sidebar-control-desc {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94A3B8;
+}
+
+/* Tarjeta inferior de Tip / Hint */
+.sidebar-tip-card {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 14px 16px;
+}
+
+.tip-icon {
+    -fx-font-size: 12px;
+    -fx-text-fill: #D97706; /* Icono del check naranja */
+    -fx-font-weight: bold;
+}
+
+.tip-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+}
+
+/* Fondo general de la ventana */
+.main-background {
+    -fx-background-color: #E2E8F0;
+}
+
+/* --- ENCABEZADO SUPERIOR --- */
+.logo-icon { -fx-font-size: 20px; -fx-text-fill: #1E293B; }
+.logo-text-bold { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B; }
+.logo-text-light { -fx-font-size: 18px; -fx-text-fill: #64748B; }
+
+.header-subtitle {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #D97706; /* Terracota */
+    -fx-letter-spacing: 1px;
+}
+.header-title {
+    -fx-font-size: 22px;
+    -fx-text-fill: #1E293B;
+}
+.header-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: #94A3B8;
+}
+
+/* Botones del Header */
+.btn-secondary-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 4px;
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+.btn-primary-solid {
+    -fx-background-color: #2C3E50; /* Navy dark */
+    -fx-background-radius: 4px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+/* Línea divisoria debajo del header */
+.main-divider {
+    -fx-background-color: #CBD5E1;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+}
+
+/* --- TARJETA DEL JUEGO (IZQUIERDA) --- */
+.game-card {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    /* Sombras opcionales */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);
+}
+
+/* Barra Navy superior del tablero */
+.navy-top-bar {
+    -fx-background-color: #2C3E50;
+    -fx-padding: 14px 24px;
+}
+.navy-text-light {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #94A3B8;
+    -fx-letter-spacing: 1px;
+}
+.navy-text-bold {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}

@@ -158,8 +158,7 @@ public class TestUsuarioDao {
     // ==========================================
 
     private Usuario crearUsuarioInstancia(String username, String password) {
-        Usuario u = new Usuario(username);
-        u.setPassword(password); // Asumiendo que tu DTO tiene setPassword()
+        Usuario u = new Usuario(username, password);
         return u;
     }
 

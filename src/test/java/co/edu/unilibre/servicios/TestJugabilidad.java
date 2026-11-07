@@ -34,7 +34,7 @@ public class TestJugabilidad {
     void setUp() {
         // Tablero de 5x5 con 3 minas para pruebas controladas
         dificultad = new Dificultad("Prueba", 3, 5, 5);
-        usuario = new Usuario("Pablo");
+        usuario = new Usuario(1, "Pablo");
         tema = new Tema("Tema test", "", "", "", "", "");
 
         partida = new Partida(dificultad, usuario, tema);

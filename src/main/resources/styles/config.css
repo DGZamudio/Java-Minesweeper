@@ -1,0 +1,126 @@
+/* Textos Principales */
+.subtitle-uppercase {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-letter-spacing: 1.5px;
+}
+.title-main {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+.desc-main {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748B;
+}
+
+/* Divisor Horizontal Gris Fino */
+.section-divider {
+    -fx-background-color: #E2E8F0;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+    -fx-margin: 10px 0;
+}
+
+/* Textos Secundarios (Títulos de Dificultad y Temas) */
+.title-secondary {
+    -fx-font-size: 20px;
+    -fx-text-fill: #1E293B;
+}
+.desc-secondary {
+    -fx-font-size: 12px;
+    -fx-text-fill: #94A3B8;
+}
+
+/* Tarjetas base tipo Checkbox/Radio */
+.card-toggle {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+.card-toggle:hover {
+    -fx-border-color: #CBD5E1;
+}
+.card-toggle:selected {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #1E293B; /* Borde oscuro Navy */
+    -fx-border-width: 2px;
+}
+
+/* Textos dentro de las tarjetas */
+.badge-favorito {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-letter-spacing: 0.5px;
+}
+.title-dificultad {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+    -fx-padding: 10px 0 4px 0;
+}
+.desc-dimensiones {
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+}
+.desc-minas {
+    -fx-font-size: 11px;
+    -fx-text-fill: #94A3B8;
+    -fx-padding: 4px 0 0 0;
+}
+
+/* Círculos de Radio Button */
+.radio-indicator {
+    -fx-min-width: 16px;
+    -fx-min-height: 16px;
+    -fx-max-width: 16px;
+    -fx-max-height: 16px;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 2px;
+    -fx-border-radius: 50%;
+    -fx-background-radius: 50%;
+}
+.card-toggle:selected .radio-indicator {
+    -fx-border-color: #1E293B;
+    -fx-background-color: #1E293B;
+    -fx-background-insets: 3px;
+}
+
+/* --- FRANJA DEL FOOTER (RESUMEN) --- */
+.footer-navy {
+    -fx-background-color: #243447;
+    -fx-padding: 24px 32px;
+    /* Efecto para que se pegue abajo si es necesario, o margen superior */
+    -fx-margin-top: 20px;
+}
+.footer-title {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #94A3B8;
+    -fx-letter-spacing: 1px;
+}
+.footer-desc {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F8FAFC; /* Texto blanco/plata */
+}
+
+/* Botón de Comenzar Partida */
+.btn-comenzar {
+    -fx-background-color: #748BA3; /* Gris Azulado de la imagen */
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+.btn-comenzar:hover {
+    -fx-background-color: #94A3B8;
+}

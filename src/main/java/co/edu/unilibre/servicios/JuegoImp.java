@@ -17,6 +17,7 @@ import co.edu.unilibre.dto.Resultado;
 public class JuegoImp implements Juego {
 
     private Instant tiempoInicio;
+    private Instant tiempoFinal;
     private Partida partida;
     private int minasRestantes;
     private int banderasRestantes;
@@ -41,10 +42,12 @@ public class JuegoImp implements Juego {
 		int[][] coordenadas = {{x,y+1}, {x,y-1}, {x+1, y}, {x-1, y}, {x+1, y+1}, {x-1, y+1}, {x-1, y-1}, {x+1, y-1}};
 
 		for (int i = 0; i < coordenadas.length; i++) {
-            if (coordenadas[i][0] <= 0 || coordenadas[i][0] >= filas || coordenadas[i][1] <= 0 || coordenadas[i][1] >= columnas) {
+		    int localX = coordenadas[i][0];
+			int localY = coordenadas[i][1];
+            if (localX < 0 || localX >= filas || localY < 0 || localY >= columnas) {
                 continue;
             } else {
-                if (tablero[coordenadas[i][0]][coordenadas[i][1]].isMina()) {
+                if (tablero[localX][localY].isMina()) {
                     adyacentes += 1;
                 }
             }
@@ -57,21 +60,26 @@ public class JuegoImp implements Juego {
 	    if (casilla.isDescubierta()) return;
 	    if (!casilla.isMina()) {
 			casilla.setDescubierta(true);
-               Casilla[][] tablero = partida.getTablero();
-               int columnas = partida.getDificultad().getColumnas();
-               int filas = partida.getDificultad().getFilas();
-               int x = casilla.getX();
-               int y = casilla.getY();
+            Casilla[][] tablero = partida.getTablero();
+            int columnas = partida.getDificultad().getColumnas();
+            int filas = partida.getDificultad().getFilas();
+            int x = casilla.getX();
+            int y = casilla.getY();
 
 			int[][] coordenadas = {{x,y+1}, {x,y-1}, {x+1, y}, {x-1, y}, {x+1, y+1}, {x-1, y+1}, {x-1, y-1}, {x+1, y-1}};
 
 			for (int i = 0; i < coordenadas.length; i++) {
-                if (coordenadas[i][0] < 0 || coordenadas[i][0] > filas || coordenadas[i][1] < 0 || coordenadas[i][1] > columnas) {
+    			int localX = coordenadas[i][0];
+                int localY = coordenadas[i][1];
+                if (localX < 0 || localX >= filas || localY < 0 || localY >= columnas) {
                     continue;
                 } else {
-                    if (!tablero[coordenadas[i][0]][coordenadas[i][1]].isMina()) {
-                        if (obtenerAdyacentes(tablero[coordenadas[i][0]][coordenadas[i][1]]) == 0) {
-                            esparcirCasillasVacias(tablero[coordenadas[i][0]][coordenadas[i][1]]);
+                    if (!tablero[localX][localY].isMina()) {
+                        if (obtenerAdyacentes(tablero[localX][localY]) == 0) {
+                            esparcirCasillasVacias(tablero[localX][localY]);
+                        }
+                        else {
+                            descubrirCasilla(tablero[localX][localY]);
                         }
                     }
                 }
@@ -96,6 +104,9 @@ public class JuegoImp implements Juego {
 	    if (dificultad.getMinas() > minasMaximas) {
 			throw new RuntimeException("Tablero no valido, mas minas que casillas");
 		}
+		if (dificultad.getFilas() > 300 || dificultad.getColumnas() > 300) {
+		    throw new RuntimeException("Tablero no valido, muy grande");
+		}
 	}
 
 	public int getBanderasRestantes() {
@@ -103,7 +114,7 @@ public class JuegoImp implements Juego {
 	}
 
 	public Duration getTiempoActual() {
-	    return Duration.between(this.tiempoInicio, Instant.now());
+	    return Duration.between(this.tiempoInicio, this.tiempoFinal);
 	}
 
 	@Override
@@ -165,11 +176,12 @@ public class JuegoImp implements Juego {
 		int adyacentes = obtenerAdyacentes(casilla);
 
 		casilla.setMinasAdyacentes(adyacentes);
-		casilla.setDescubierta(true);
 
 		if (adyacentes == 0) {
 		    esparcirCasillasVacias(casilla);
 		}
+
+		casilla.setDescubierta(true);
 
 		verificarPartida();
 	}
@@ -177,6 +189,10 @@ public class JuegoImp implements Juego {
 	@Override
 	public void hacerChording(Casilla casilla) {
 	    verificarCoordenadasValidas(this.partida.getDificultad(), casilla);
+
+		if (!casilla.isDescubierta()) {
+		    return;
+		}
 
 	    Casilla[][] tablero = partida.getTablero();
 	    int x = casilla.getX();
@@ -186,26 +202,31 @@ public class JuegoImp implements Juego {
 	    int adyacentes = casilla.getMinasAdyacentes();
 		int banderas = 0;
 
-		int[][] coordenadas = {{x,y+1}, {x,y-1}, {x+1, y}, {x-1, y}, {x+1, y+1}, {x-1, y+1}, {x-1, y-1}, {x+1, y-1}};
+		int[][] coordenadas = {{x,y}, {x,y+1}, {x,y-1}, {x+1, y}, {x-1, y}, {x+1, y+1}, {x-1, y+1}, {x-1, y-1}, {x+1, y-1}};
 		for (int i = 0; i < coordenadas.length; i++) {
-            if (coordenadas[i][0] < 0 || coordenadas[i][0] > filas || coordenadas[i][1] < 0 || coordenadas[i][1] > columnas) {
+		    int localX = coordenadas[i][0];
+            int localY = coordenadas[i][1];
+            if (localX < 0 || localX >= filas || localY < 0 || localY >= columnas) {
+                coordenadas[i] = null;
                 continue;
             } else {
-                if (tablero[coordenadas[i][0]][coordenadas[i][1]].isBandera()) {
+                if (tablero[localX][localY].isBandera()) {
                     banderas++;
+                    coordenadas[i] = null;
                 }
             }
 		}
 
 		if (adyacentes == banderas) {
             for (int i = 0; i < coordenadas.length; i++) {
-                if (coordenadas[i][0] < 0 || coordenadas[i][0] > filas || coordenadas[i][1] < 0 || coordenadas[i][1] > columnas) {
-                    continue;
-                } else {
-                    descubrirCasilla(tablero[coordenadas[i][0]][coordenadas[i][1]]);
+                if (coordenadas[i] != null) {
+                    int localX = coordenadas[i][0];
+                    int localY = coordenadas[i][1];
+                    descubrirCasilla(tablero[localX][localY]);
                 }
     		}
 		}
+		verificarPartida();
 	}
 
 	@Override
@@ -213,20 +234,22 @@ public class JuegoImp implements Juego {
 	    verificarCoordenadasValidas(this.partida.getDificultad(), casilla);
 
 	    if (!casilla.isDescubierta()) {
-			casilla.setBandera(!casilla.isBandera());
-
 			if (casilla.isBandera()) {
 			    this.banderasRestantes++;
 				if (casilla.isMina()) {
 				    this.minasRestantes++;
 				}
 			} else {
+			    if (this.banderasRestantes == 0) return;
 			    this.banderasRestantes--;
 				if (casilla.isMina()) {
 				    this.minasRestantes--;
 				}
 			}
+
+			casilla.setBandera(!casilla.isBandera());
 		}
+		verificarPartida();
 	}
 
 }

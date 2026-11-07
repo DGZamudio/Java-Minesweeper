@@ -45,8 +45,7 @@ public class UsuarioDaoImp implements UsuarioDao {
                 String passHash = res.getString("password_hash");
 
                 if (BCrypt.checkpw(password, passHash)) {
-                    Usuario usr = new Usuario(username);
-                    usr.setId(id);
+                    Usuario usr = new Usuario(id, username);
                     return usr;
                 }
             }
