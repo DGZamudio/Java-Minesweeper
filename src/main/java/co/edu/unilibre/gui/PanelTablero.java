@@ -36,6 +36,7 @@ public class PanelTablero extends VBox {
     private Label lblBanderasRestantes;
     private Image imgBandera;
     private Image imgMina;
+    private boolean bgImage;
 
     // Servicios
     private JuegoImp juego;
@@ -66,6 +67,14 @@ public class PanelTablero extends VBox {
             imgBandera = null;
         } else {
             imgBandera = new Image(stream);
+        }
+
+        stream = getClass().getResourceAsStream("/images/" + tema.getBgImage());
+
+        if (stream == null) {
+            bgImage = false;
+        } else {
+            bgImage = true;
         }
 
         getStylesheets().add(getClass().getResource("/styles/general.css").toExternalForm());
@@ -154,6 +163,9 @@ public class PanelTablero extends VBox {
         VBox tableroWrapper = new VBox(tablero);
         tableroWrapper.setAlignment(Pos.CENTER);
         tableroWrapper.setPadding(new Insets(40));
+        if (bgImage) {
+            tableroWrapper.setStyle("-fx-background-image: url('" + "/images/" + tema.getBgImage() + "')");
+        }
         leftCard.getChildren().addAll(topBar, tableroWrapper);
 
         // --- SIDEBAR DERECHA ---
@@ -271,6 +283,28 @@ public class PanelTablero extends VBox {
 
         contentArea.getChildren().addAll(leftCard, sideBar);
 
+        // Cargar colores del tema
+        StringBuilder cssBoton = new StringBuilder();
+        if (tema.getBg() != null && !tema.getBg().isBlank()) {
+            cssBoton.append("-fx-background-color: ").append(tema.getBg()).append("; ");
+        }
+        if (tema.getFg() != null && !tema.getFg().isBlank()) {
+            cssBoton.append("-fx-text-fill: ").append(tema.getFg()).append("; ");
+        }
+
+        if (!cssBoton.isEmpty()) {
+            btnNuevaPartida.setStyle(cssBoton.toString());
+        }
+
+        // Cargar colores de texto del tema
+        if (tema.getFg() != null && !tema.getFg().isBlank()) {
+            String cssSoloTexto = "-fx-text-fill: " + tema.getFg() + ";";
+
+            lblEstado.setStyle(cssSoloTexto);
+            tituloDetalles.setStyle(cssSoloTexto);
+            tituloControles.setStyle(cssSoloTexto);
+        }
+
         // ENSAMBLE FINAL
         getChildren().addAll(masterHeader, mainDivider, contentArea);
         renderizarTablero();
@@ -298,10 +332,9 @@ public class PanelTablero extends VBox {
         // Centro (Iconos y Banderas)
         HBox centerStats = new HBox(8);
         centerStats.setAlignment(Pos.CENTER);
-        Label lblIconoCentro = new Label("💣"); // Puedes cambiarlo por ImageView
         lblBanderasRestantes = new Label(String.valueOf(juego.getBanderasRestantes()));
         lblBanderasRestantes.getStyleClass().add("navy-text-bold");
-        centerStats.getChildren().addAll(lblIconoCentro, lblBanderasRestantes);
+        centerStats.getChildren().addAll(lblBanderasRestantes);
 
         Region sp2 = new Region();
         HBox.setHgrow(sp2, Priority.ALWAYS);
@@ -315,6 +348,17 @@ public class PanelTablero extends VBox {
         lblTiempo.getStyleClass().add("navy-text-bold");
         rightStats.getChildren().addAll(lblTiempoText, lblTiempo);
 
+        // Cargar colores del tema
+        if (partida.getTema().getBg() != null && !partida.getTema().getBg().isBlank()) {
+            topBar.setStyle("-fx-background-color: " + partida.getTema().getBg() + "; ");
+        }
+        if (partida.getTema().getFg() != null && !partida.getTema().getFg().isBlank()) {
+            String css = "-fx-text-fill: " + partida.getTema().getFg() + "; ";
+            lblMinasText.setStyle(css);
+            lblBanderasRestantes.setStyle(css);
+            lblTiempo.setStyle(css);
+        }
+
         topBar.getChildren().addAll(lblMinasText, sp1, centerStats, sp2, rightStats);
     }
 
@@ -327,6 +371,8 @@ public class PanelTablero extends VBox {
             for (int j = 0; j < columnas; j++) {
                 Button btn = new Button();
                 btn.setPrefSize(35, 35);
+                btn.setMinSize(35, 35);
+                btn.setMaxSize(35, 35);
 
                 final int fila = i;
                 final int col = j;
@@ -361,12 +407,18 @@ public class PanelTablero extends VBox {
         switch (partida.getResultado()) {
             case Resultado.GANADOR:
                 temporizador.stop();
-                Alert alertWin = new Alert(Alert.AlertType.INFORMATION, "Ganaste!\nTiempo: " + partida.getTiempo());
+                long totalSegundos =  partida.getTiempo().getSeconds();
+                long minutos  = totalSegundos / 60;
+                long segundos = totalSegundos % 60;
+                Alert alertWin = new Alert(Alert.AlertType.INFORMATION, "Ganaste!\nTiempo: " + String.format("%02d:%02d", minutos, segundos));
                 alertWin.show();
                 break;
             case Resultado.PERDEDOR:
                 temporizador.stop();
-                Alert alertLoose = new Alert(Alert.AlertType.INFORMATION, "Perdiste!\nTiempo: " + partida.getTiempo());
+                long totalSegundos1 =  partida.getTiempo().getSeconds();
+                long minutos1  = totalSegundos1 / 60;
+                long segundos1 = totalSegundos1 % 60;
+                Alert alertLoose = new Alert(Alert.AlertType.INFORMATION, "Perdiste!\nTiempo: " + String.format("%02d:%02d", minutos1, segundos1));
                 alertLoose.show();
                 break;
             case Resultado.EN_PROGRESO:
@@ -380,37 +432,55 @@ public class PanelTablero extends VBox {
             for (int j = 0; j < columnas; j++) {
                 Casilla casilla = partida.getTablero()[i][j];
                 Button btn = casillas[i][j];
+                btn.getStyleClass().removeAll(
+                    "btn-casilla-oculta", "btn-casilla-descubierta",
+                    "numero-1", "numero-2", "numero-3", "numero-4",
+                    "numero-5", "numero-6", "numero-7", "numero-8"
+                );
 
                 if (casilla.isDescubierta()) {
+                    btn.setDisable(true);
+                    btn.getStyleClass().add("btn-casilla-descubierta");
+
                     if (casilla.isMina()) {
                         if (imgBandera != null) {
-                            ImageView viewBandera = new ImageView(imgBandera);
-                            viewBandera.setFitWidth(24);
-                            viewBandera.setFitHeight(24);
-                            viewBandera.setPreserveRatio(true);
-                            btn.setGraphic(viewBandera);
+                            ImageView viewMina = new ImageView(imgMina);
+                            viewMina.setFitWidth(24);
+                            viewMina.setFitHeight(24);
+                            viewMina.setPreserveRatio(true);
+                            btn.setGraphic(viewMina);
                         } else {
                             btn.setText("💣");
                         }
                         btn.setStyle("-fx-background-color: #ff4d4d; -fx-opacity: 1;"); // Opacity 1 para que no se vea gris al deshabilitar
                     } else if (casilla.getMinasAdyacentes() > 0) {
-                        btn.setText(String.valueOf(casilla.getMinasAdyacentes()));
+                        btn.setDisable(false);
+                        int num = casilla.getMinasAdyacentes();
+                        btn.setGraphic(null);
+                        btn.setText(String.valueOf(num));
+                        btn.getStyleClass().add("numero-" + num);
                     } else {
                         btn.setDisable(true);
                         btn.setText(""); // Espacio en blanco (0 minas)
                     }
                 } else if (casilla.isBandera()) {
+                    btn.setDisable(false);
+                    btn.getStyleClass().add("btn-casilla-oculta");
+
                     if (imgMina != null) {
-                        ImageView viewMina = new ImageView(imgMina);
-                        viewMina.setFitWidth(24);
-                        viewMina.setFitHeight(24);
-                        viewMina.setPreserveRatio(true);
-                        btn.setGraphic(viewMina);
+                        ImageView viewBandera = new ImageView(imgBandera);
+                        viewBandera.setFitWidth(24);
+                        viewBandera.setFitHeight(24);
+                        viewBandera.setPreserveRatio(true);
+                        btn.setGraphic(viewBandera);
                     } else {
                         btn.setText("🚩");
                     }
                 } else {
+                    btn.setDisable(false);
+                    btn.setGraphic(null);
                     btn.setText("");
+                    btn.getStyleClass().add("btn-casilla-oculta");
                 }
             }
         }

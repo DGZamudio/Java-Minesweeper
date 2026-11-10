@@ -154,3 +154,65 @@
     -fx-font-weight: bold;
     -fx-text-fill: #FFFFFF;
 }
+
+/* ==========================================
+   ESTADOS DE LAS CASILLAS
+   ========================================== */
+
+/* 1. Casilla OCULTA (Sin abrir) */
+.btn-casilla-oculta {
+    -fx-background-color: #DCE2EA;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+    -fx-cursor: hand;
+}
+
+/* Efecto hover suave al pasar el mouse sobre casillas ocultas */
+.btn-casilla-oculta:hover {
+    -fx-background-color: #CBD5E1;
+}
+
+/* 2. Casilla DESCUBIERTA (Abierta) */
+.btn-casilla-descubierta {
+    /* Fondo blanco semitransparente para dar contraste al texto sobre la imagen de Minecraft */
+    -fx-background-color: rgba(255, 255, 255, 0.88);
+    -fx-border-color: rgba(0, 0, 0, 0.08);
+    -fx-border-width: 0.5px;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-opacity: 1 !important; /* Evita que JavaFX lo aclare/opaque al deshabilitar */
+}
+
+/* 3. Colores estándar de números del Buscaminas */
+.numero-1 { -fx-text-fill: #1976D2; } /* Azul */
+.numero-2 { -fx-text-fill: #388E3C; } /* Verde */
+.numero-3 { -fx-text-fill: #D32F2F; } /* Rojo */
+.numero-4 { -fx-text-fill: #7B1FA2; } /* Morado */
+.numero-5 { -fx-text-fill: #FF8F00; } /* Naranja */
+.numero-6 { -fx-text-fill: #0097A7; } /* Cyan */
+.numero-7 { -fx-text-fill: #333333; } /* Negro */
+.numero-8 { -fx-text-fill: #616161; } /* Gris */
+
+/* Corrección para la barra superior verde de la foto */
+.navy-top-bar {
+    -fx-background-color: rgba(15, 23, 42, 0.9); /* Azul marino muy oscuro para contraste */
+}
+.navy-text-bold, .navy-text-light {
+    -fx-text-fill: #FFFFFF !important; /* Forzar texto blanco */
+}
+
+/* Aplicar a todas las casillas */
+.btn-casilla-oculta, .btn-casilla-descubierta {
+    -fx-padding: 0px;            /* Elimina el relleno interno que empuja los bordes */
+    -fx-alignment: center;       /* Centra icono o texto perfectamente */
+    -fx-content-display: center;
+}
+
+/* Evitar que las imágenes fuercen el resize del botón */
+.button .image-view {
+    -fx-alignment: center;
+}
