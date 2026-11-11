@@ -8,6 +8,7 @@ import co.edu.unilibre.dto.Tema;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.*;
 
 /**
@@ -134,15 +135,13 @@ public class VistaConfiguracion extends VBox {
             // Simulador de paleta de colores (Un cuadrito visual)
             Region paletteBox = new Region();
             paletteBox.setPrefSize(40, 40);
-            paletteBox.setStyle("-fx-background-color: #CBD5E1; -fx-background-radius: 4px;"); // Gris temporal
+            paletteBox.setStyle("-fx-background-color: " + tema.getBg() + ";-fx-background-radius: 4px;"); // Gris temporal
 
             VBox textPart = new VBox(2);
             textPart.setAlignment(Pos.CENTER_LEFT);
             Label tituloTema = new Label(tema.getNombre());
             tituloTema.getStyleClass().add("title-dificultad");
-            Label subtituloTema = new Label("Claro y atemporal"); // Podrías sacarlo de la BD luego
-            subtituloTema.getStyleClass().add("desc-dimensiones");
-            textPart.getChildren().addAll(tituloTema, subtituloTema);
+            textPart.getChildren().addAll(tituloTema);
 
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -186,9 +185,15 @@ public class VistaConfiguracion extends VBox {
         btnComenzarJuego.getStyleClass().add("btn-comenzar");
 
         btnComenzarJuego.setOnAction(event -> {
-            if (dificultadSeleccionada != null && temaSeleccionado != null) {
-                onIniciarPartida.accept(dificultadSeleccionada, temaSeleccionado);
+            if (dificultadSeleccionada == null) {
+                Alert alert = new Alert(AlertType.WARNING, "No se seleccionó una dificultad");
+                alert.show();
             }
+            if (temaSeleccionado == null) {
+                Alert alert = new Alert(AlertType.WARNING, "No se seleccionó un tema");
+                alert.show();
+            }
+            onIniciarPartida.accept(dificultadSeleccionada, temaSeleccionado);
         });
 
         contenedorResumen.getChildren().addAll(resumenTextos, spacerFooter, btnComenzarJuego);

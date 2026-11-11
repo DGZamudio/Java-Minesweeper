@@ -1,5 +1,8 @@
 package co.edu.unilibre.gui;
 
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import co.edu.unilibre.dto.Casilla;
 import co.edu.unilibre.dto.Dificultad;
 import co.edu.unilibre.dto.Partida;
@@ -27,6 +30,8 @@ public class PanelTablero extends VBox {
     // Callbacks
     private Runnable onReiniciar;
     private Runnable onNuevaPartida;
+    private Runnable onVerRanking;
+    private Consumer<Partida> onSubirPartida;
 
     // JavaFX
     private GridPane tablero;
@@ -126,6 +131,7 @@ public class PanelTablero extends VBox {
         btnReiniciar.getStyleClass().add("btn-secondary-outline");
         btnReiniciar.setOnAction(event -> {
             if (onReiniciar != null) {
+                if (temporizador != null) temporizador.stop();
                 onReiniciar.run();
             }
         });
@@ -133,6 +139,7 @@ public class PanelTablero extends VBox {
         btnNuevaPartida.getStyleClass().add("btn-primary-solid");
         btnNuevaPartida.setOnAction(event -> {
             if (onNuevaPartida != null) {
+                if (temporizador != null) temporizador.stop();
                 onNuevaPartida.run();
             }
         });
@@ -318,6 +325,14 @@ public class PanelTablero extends VBox {
         this.onNuevaPartida = onNuevaPartida;
     }
 
+    public void setOnVerRanking(Runnable onVerRanking) {
+        this.onVerRanking = onVerRanking;
+    }
+
+    public void setOnSubirPartida(Consumer<Partida> onSubirPartida) {
+        this.onSubirPartida = onSubirPartida;
+    }
+
     private void inicializarEncabezado() {
         topBar = new HBox();
         topBar.getStyleClass().add("navy-top-bar");
@@ -404,26 +419,6 @@ public class PanelTablero extends VBox {
     }
 
     public void renderizarTablero() {
-        switch (partida.getResultado()) {
-            case Resultado.GANADOR:
-                temporizador.stop();
-                long totalSegundos =  partida.getTiempo().getSeconds();
-                long minutos  = totalSegundos / 60;
-                long segundos = totalSegundos % 60;
-                Alert alertWin = new Alert(Alert.AlertType.INFORMATION, "Ganaste!\nTiempo: " + String.format("%02d:%02d", minutos, segundos));
-                alertWin.show();
-                break;
-            case Resultado.PERDEDOR:
-                temporizador.stop();
-                long totalSegundos1 =  partida.getTiempo().getSeconds();
-                long minutos1  = totalSegundos1 / 60;
-                long segundos1 = totalSegundos1 % 60;
-                Alert alertLoose = new Alert(Alert.AlertType.INFORMATION, "Perdiste!\nTiempo: " + String.format("%02d:%02d", minutos1, segundos1));
-                alertLoose.show();
-                break;
-            case Resultado.EN_PROGRESO:
-                break;
-        }
         lblBanderasRestantes.setText("Banderas: " + juego.getBanderasRestantes());
         int filas = partida.getDificultad().getFilas();
         int columnas = partida.getDificultad().getColumnas();
@@ -483,6 +478,73 @@ public class PanelTablero extends VBox {
                     btn.getStyleClass().add("btn-casilla-oculta");
                 }
             }
+        }
+
+        switch (partida.getResultado()) {
+            case Resultado.GANADOR:
+                temporizador.stop();
+                long totalSegundos =  partida.getTiempo().getSeconds();
+                long minutos  = totalSegundos / 60;
+                long segundos = totalSegundos % 60;
+                Alert alertWin = new Alert(Alert.AlertType.CONFIRMATION);
+                alertWin.setTitle("¡Partida Finalizada!");
+                alertWin.setHeaderText("🎉 ¡Ganaste la partida!");
+                alertWin.setContentText("Tiempo: " + String.format("%02d:%02d", minutos, segundos));
+
+                ButtonType btnReiniciar = new ButtonType("Jugar de nuevo");
+                ButtonType btnConfig = new ButtonType("Cambiar Dificultad");
+                ButtonType btnSubirPuntaje = new ButtonType("Subir mi puntuación");
+
+                alertWin.getButtonTypes().setAll(btnReiniciar, btnConfig, btnSubirPuntaje);
+
+                Optional<ButtonType> resultado = alertWin.showAndWait();
+
+                if (resultado.isPresent()) {
+                    if (resultado.get() == btnReiniciar) {
+                        if (onReiniciar != null) onReiniciar.run();
+
+                    } else if (resultado.get() == btnConfig) {
+                        if (onNuevaPartida != null) onNuevaPartida.run();
+
+                    } else if (resultado.get() == btnSubirPuntaje) {
+                        if (onSubirPartida != null && this.partida != null) onSubirPartida.accept(this.partida);
+
+                    }
+                }
+                break;
+            case Resultado.PERDEDOR:
+                temporizador.stop();
+                long totalSegundos1 =  partida.getTiempo().getSeconds();
+                long minutos1  = totalSegundos1 / 60;
+                long segundos1 = totalSegundos1 % 60;
+                Alert alertLoose = new Alert(Alert.AlertType.INFORMATION);
+                alertLoose.setTitle("¡Partida Finalizada!");
+                alertLoose.setHeaderText("Perdiste la partida :(");
+                alertLoose.setContentText("Tiempo: " + String.format("%02d:%02d", minutos1, segundos1));
+
+                btnReiniciar = new ButtonType("Jugar de nuevo");
+                btnConfig = new ButtonType("Cambiar Dificultad");
+                ButtonType btnVerPuntajes = new ButtonType("Ver puntajes");
+
+                alertLoose.getButtonTypes().setAll(btnReiniciar, btnConfig, btnVerPuntajes);
+
+                resultado = alertLoose.showAndWait();
+
+                if (resultado.isPresent()) {
+                    if (resultado.get() == btnReiniciar) {
+                        if (onReiniciar != null) onReiniciar.run();
+
+                    } else if (resultado.get() == btnConfig) {
+                        if (onNuevaPartida != null) onNuevaPartida.run();
+
+                    } else if (resultado.get() == btnVerPuntajes) {
+                        if (onVerRanking != null) onVerRanking.run();
+
+                    }
+                }
+                break;
+            case Resultado.EN_PROGRESO:
+                break;
         }
     }
 

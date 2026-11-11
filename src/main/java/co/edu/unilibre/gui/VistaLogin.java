@@ -2,6 +2,7 @@ package co.edu.unilibre.gui;
 
 import java.util.function.BiConsumer;
 
+import co.edu.unilibre.dto.Usuario;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -15,8 +16,9 @@ public class VistaLogin extends VBox {
     // Callbacks
     private BiConsumer<String, String> onAutenticar;
     private Runnable onIrARegistro;
+    private Runnable onCerrarLogin;
 
-    public VistaLogin() {
+    public VistaLogin(Usuario usuario) {
         // Cargar estilos
         getStylesheets().add(getClass().getResource("/styles/general.css").toExternalForm());
         getStylesheets().add(getClass().getResource("/styles/auth.css").toExternalForm());
@@ -50,6 +52,15 @@ public class VistaLogin extends VBox {
 
         Button btnCerrar = new Button("✕");
         btnCerrar.getStyleClass().add("btn-close");
+        btnCerrar.setOnAction(event -> {
+            if (onCerrarLogin != null) onCerrarLogin.run();
+        });
+
+
+        if (usuario == null) {
+            btnCerrar.setVisible(false);
+            btnCerrar.setDisable(true);
+        }
 
         header.getChildren().addAll(logoBox, spacerHeader, btnCerrar);
 
@@ -165,5 +176,9 @@ public class VistaLogin extends VBox {
 
     public void setOnIrARegistro(Runnable onIrARegistro) {
         this.onIrARegistro = onIrARegistro;
+    }
+
+    public void setOnCerrarLogin(Runnable onCerrarLogin) {
+        this.onCerrarLogin = onCerrarLogin;
     }
 }

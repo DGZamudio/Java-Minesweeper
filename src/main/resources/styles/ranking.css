@@ -1,0 +1,117 @@
+/* --- BARRA DE FILTROS (TODAS, FÁCIL, MEDIO, DIFÍCIL) --- */
+.filter-bar {
+    -fx-background-color: #E2E8F0;
+    -fx-background-radius: 4px;
+    -fx-padding: 2px;
+}
+
+.filter-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 6px 16px;
+    -fx-background-radius: 4px;
+    -fx-cursor: hand;
+}
+
+.filter-button:selected {
+    -fx-background-color: #243447; /* Azul Navy oscuro seleccionado */
+    -fx-text-fill: #FFFFFF;
+}
+
+/* --- ESTILO GENERAL DE LA TABLA --- */
+.custom-table {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+/* Cabecera gris clara */
+.custom-table .column-header-background {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.custom-table .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 12px 8px;
+}
+
+.custom-table .column-header .label {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+/* Celdas / Filas */
+.custom-table .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 6px 0;
+}
+
+.custom-table .table-row-cell:empty {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+}
+
+/* --- AVATAR CIRCULAR (INICIALES) --- */
+.avatar-circle {
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-background-color: #475569; /* Gris slate */
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-background-radius: 50%;
+}
+
+.player-name-text {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.col-posicion-text {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+}
+
+.time-text-bold {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+/* --- BADGES / PILLS DE DIFICULTAD --- */
+.badge-dificultad {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 10px;
+    -fx-background-radius: 4px;
+}
+
+.badge-facil {
+    -fx-background-color: #DCFCE7; /* Verde suave */
+    -fx-text-fill: #15803D;
+}
+
+.badge-medio {
+    -fx-background-color: #E0F2FE; /* Azul suave */
+    -fx-text-fill: #0369A1;
+}
+
+.badge-dificil {
+    -fx-background-color: #FEE2E2; /* Rojo suave */
+    -fx-text-fill: #B91C1C;
+}

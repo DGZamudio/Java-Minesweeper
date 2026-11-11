@@ -49,10 +49,7 @@ public class VistaRegister extends VBox {
         Region spacerHeader = new Region();
         HBox.setHgrow(spacerHeader, Priority.ALWAYS);
 
-        Button btnCerrar = new Button("✕");
-        btnCerrar.getStyleClass().add("btn-close");
-
-        header.getChildren().addAll(logoBox, spacerHeader, btnCerrar);
+        header.getChildren().addAll(logoBox, spacerHeader);
 
         // --- TÍTULOS ---
         VBox titleBox = new VBox(4);

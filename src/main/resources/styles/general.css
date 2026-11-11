@@ -1,0 +1,73 @@
+/* Contenedor Principal del Header */
+.global-header {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 0 1px 0; /* Solo línea inferior */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.03), 10, 0, 0, 4);
+}
+
+/* --- LOGO --- */
+.logo-icon {
+    -fx-font-size: 20px;
+    -fx-text-fill: #1E293B;
+}
+
+.logo-text-bold {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.logo-text-light {
+    -fx-font-size: 17px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #64748B;
+}
+
+/* --- BOTONES DE NAVEGACIÓN --- */
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 14px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #0F172A;
+}
+
+.nav-btn:focused, .nav-btn.active {
+    -fx-background-color: #E2E8F0;
+    -fx-text-fill: #1E293B;
+}
+
+/* --- BADGE DE USUARIO --- */
+.header-avatar {
+    -fx-min-width: 28px;
+    -fx-min-height: 28px;
+    -fx-max-width: 28px;
+    -fx-max-height: 28px;
+    -fx-background-color: #243447;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-background-radius: 50%;
+}
+
+.header-user-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 8px;
+    -fx-cursor: hand;
+}
+
+.header-user-btn:hover {
+    -fx-text-fill: #2563EB;
+}
