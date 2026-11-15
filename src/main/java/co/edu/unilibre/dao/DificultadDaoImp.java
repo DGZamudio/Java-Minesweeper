@@ -25,7 +25,16 @@ public class DificultadDaoImp implements DificultadDao {
 			stmt.setInt(3, dificultad.getFilas());
 			stmt.setInt(4, dificultad.getColumnas());
 
-            stmt.executeUpdate();
+			int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int idGenerado = generatedKeys.getInt(1);
+                        dificultad.setId(idGenerado);
+                    }
+                }
+            }
 		} catch (SQLException e) {
 		    throw new RuntimeException("Error al guardar la dificultad", e);
 		}

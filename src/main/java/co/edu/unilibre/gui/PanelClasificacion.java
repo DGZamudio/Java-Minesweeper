@@ -137,7 +137,11 @@ public class PanelClasificacion extends VBox {
         TableColumn<Partida, String> colDificultad = new TableColumn<>("DIFICULTAD");
         colDificultad.setCellValueFactory(cellData -> {
             if (cellData.getValue().getDificultad() != null) {
-                return new ReadOnlyObjectWrapper<>(cellData.getValue().getDificultad().getNombre());
+                String nombreDificultad = cellData.getValue().getDificultad().getNombre();
+                if (!nombreDificultad.equals("Fácil") && !nombreDificultad.equals("Medio") && !nombreDificultad.equals("Difícil")) {
+                    nombreDificultad = "Personalizado";
+                }
+                return new ReadOnlyObjectWrapper<>(nombreDificultad);
             }
             return new ReadOnlyObjectWrapper<>("-");
         });

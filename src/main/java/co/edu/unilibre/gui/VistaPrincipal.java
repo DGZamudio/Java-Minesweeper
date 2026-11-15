@@ -65,6 +65,29 @@ public class VistaPrincipal extends Application {
 
         panelTablero.setOnSubirPartida((partida) -> {
             if (partida != null) {
+                Dificultad dificultadActual = partida.getDificultad();
+                int idDificultad = dificultadActual.getId();
+                if (idDificultad != 39 && idDificultad != 40 && idDificultad != 41) {
+                    // Crear una referencia de la dificultad si esta aun no existe
+                    String dificultadHash = dificultadActual.getFilas() + "x" + dificultadActual.getColumnas() + "x" + dificultadActual.getMinas();
+                    List<Dificultad> dificultades = dificultadDao.listarDificultades();
+
+                    boolean exists = false;
+
+                    for (Dificultad dificultadLoop : dificultades) {
+                        if (dificultadLoop.getNombre().equals(dificultadHash)) {
+                            exists = true;
+                            partida.getDificultad().setId(dificultadLoop.getId());
+                        }
+                    }
+
+                    if (!exists) {
+                        partida.getDificultad().setNombre(dificultadHash);
+                        dificultadDao.guardarDificultad(dificultad);
+
+                    }
+                }
+
                 partidaDao.guardarPartida(partida);
                 header.setVisible(true);
                 cargarClasificacion();
@@ -129,7 +152,11 @@ public class VistaPrincipal extends Application {
 
     // VistaConfiguración
     private void cargarConfiguracion() {
-        List<Dificultad> dificultades = dificultadDao.listarDificultades();
+        List<Dificultad> dificultades = dificultadDao.listarDificultades()
+            .stream()
+            .filter(dificultad -> dificultad.getId() == 39 || dificultad.getId() == 40 || dificultad.getId() == 41)
+            .toList();;
+
         List<Tema> temas = temaDao.listarTemas();
 
         VistaConfiguracion vistaConfiguracion = new VistaConfiguracion(dificultades, temas);

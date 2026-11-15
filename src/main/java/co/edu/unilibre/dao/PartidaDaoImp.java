@@ -44,7 +44,8 @@ public class PartidaDaoImp implements PartidaDao {
                  "d.id AS df_id, d.nombre, d.minas, d.columnas, d.filas " +
                  "FROM partidas p " +
                  "JOIN usuarios u ON u.id = p.usuario_id " +
-                 "JOIN dificultades d ON d.id = p.dificultad_id;";
+                 "JOIN dificultades d ON d.id = p.dificultad_id " +
+                 "ORDER BY p.tiempo ASC;";
 
 		try (Connection conn = GestorConexiones.obtenerConexion();
          PreparedStatement stmt = conn.prepareStatement(sql);

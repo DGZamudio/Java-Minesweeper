@@ -27,7 +27,6 @@ public class VistaConfiguracion extends VBox {
         getStylesheets().add(getClass().getResource("/styles/general.css").toExternalForm());
         getStylesheets().add(getClass().getResource("/styles/config.css").toExternalForm());
 
-        // Espaciado principal de toda la vista
         setSpacing(30);
         setPadding(new Insets(40, 50, 0, 50));
         setStyle("-fx-background-color: #F8FAFC;");
@@ -58,57 +57,133 @@ public class VistaConfiguracion extends VBox {
         descripcionDificultades.getStyleClass().add("desc-secondary");
         headerDificultades.getChildren().addAll(tituloDificultades, descripcionDificultades);
 
-        HBox dificultadesContainer = new HBox(16); // Espacio entre tarjetas
+        HBox dificultadesContainer = new HBox(16);
         ToggleGroup grupoDificultades = new ToggleGroup();
 
+        // Tarjetas de dificultades desde BD
         for (Dificultad dificultad : dificultades) {
-            VBox contenido = new VBox(4);
-            contenido.setPadding(new Insets(16));
+            String txtBadge = switch (dificultad.getNombre().toLowerCase()) {
+                case "fácil" -> "PARA EMPEZAR";
+                case "medio" -> "EL FAVORITO";
+                case "difícil" -> "UN GRAN RETO";
+                default -> "ESTÁNDAR";
+            };
 
-            HBox topRow = new HBox();
-            topRow.setAlignment(Pos.CENTER_LEFT);
-
-            // Asignar el subtítulo dinámico según el nombre
-            String txtBadge = "";
-            if ("Fácil".equalsIgnoreCase(dificultad.getNombre())) txtBadge = "PARA EMPEZAR";
-            else if ("Medio".equalsIgnoreCase(dificultad.getNombre())) txtBadge = "EL FAVORITO";
-            else if ("Difícil".equalsIgnoreCase(dificultad.getNombre())) txtBadge = "UN GRAN RETO";
-            else txtBadge = "CONFIGÚRALO";
-
-            Label lblBadge = new Label(txtBadge);
-            lblBadge.getStyleClass().add("badge-favorito");
-
-            Region spacer = new Region();
-            HBox.setHgrow(spacer, Priority.ALWAYS);
-
-            Label radioCircle = new Label();
-            radioCircle.getStyleClass().add("radio-indicator");
-
-            topRow.getChildren().addAll(lblBadge, spacer, radioCircle);
-
-            Label tituloDificultad = new Label(dificultad.getNombre());
-            tituloDificultad.getStyleClass().add("title-dificultad");
-
-            Label dimensionesDificultad = new Label(dificultad.getFilas() + " × " + dificultad.getColumnas());
-            dimensionesDificultad.getStyleClass().add("desc-dimensiones");
-
-            Label minasDificultad = new Label(dificultad.getMinas() + " minas");
-            minasDificultad.getStyleClass().add("desc-minas");
-
-            contenido.getChildren().addAll(topRow, tituloDificultad, dimensionesDificultad, minasDificultad);
-
-            ToggleButton cardButton = new ToggleButton();
-            cardButton.setGraphic(contenido);
-            cardButton.getStyleClass().add("card-toggle");
-            cardButton.setToggleGroup(grupoDificultades);
-            cardButton.setUserData(dificultad);
-            cardButton.setMaxWidth(Double.MAX_VALUE);
-            HBox.setHgrow(cardButton, Priority.ALWAYS); // Hace que ocupen el mismo ancho
-
-            dificultadesContainer.getChildren().add(cardButton);
+            ToggleButton card = crearTarjetaDificultad(
+                txtBadge,
+                dificultad.getNombre(),
+                dificultad.getFilas() + " × " + dificultad.getColumnas(),
+                dificultad.getMinas() + " minas",
+                dificultad,
+                grupoDificultades
+            );
+            dificultadesContainer.getChildren().add(card);
         }
 
-        contenedorDificultades.getChildren().addAll(headerDificultades, dificultadesContainer);
+        // Tarjeta "Personalizada"
+        Dificultad difPersonalizada = new Dificultad("Personalizada", 12, 12, 20);
+        ToggleButton cardPersonalizada = crearTarjetaDificultad(
+            "CONFIGÚRALO",
+            "Personalizada",
+            "12 × 12",
+            "20 minas",
+            difPersonalizada,
+            grupoDificultades
+        );
+        dificultadesContainer.getChildren().add(cardPersonalizada);
+
+        // ==========================================
+        // PANEL DESPLEGABLE DE PERSONALIZACIÓN
+        // ==========================================
+        HBox panelPersonalizado = new HBox(20);
+        panelPersonalizado.setAlignment(Pos.CENTER_LEFT);
+        panelPersonalizado.setPadding(new Insets(16));
+        panelPersonalizado.getStyleClass().add("custom-config-box");
+
+        panelPersonalizado.setVisible(false);
+        panelPersonalizado.setManaged(false);
+
+        // Límites altos en el Spinner para permitir ingresar números y disparar el Alert al validar
+        Spinner<Integer> spFilas = new Spinner<>(5, 1000, 12);
+        Spinner<Integer> spColumnas = new Spinner<>(5, 1000, 12);
+        Spinner<Integer> spMinas = new Spinner<>(1, 100000, 20);
+
+        spFilas.setEditable(true);
+        spColumnas.setEditable(true);
+        spMinas.setEditable(true);
+        spFilas.setPrefWidth(85);
+        spColumnas.setPrefWidth(85);
+        spMinas.setPrefWidth(90);
+
+        configurarCommitAlPerderFoco(spFilas);
+        configurarCommitAlPerderFoco(spColumnas);
+        configurarCommitAlPerderFoco(spMinas);
+
+        VBox contenidoCard = (VBox) cardPersonalizada.getGraphic();
+        Label lblDimPers = (Label) contenidoCard.getChildren().get(2);
+        Label lblMinasPers = (Label) contenidoCard.getChildren().get(3);
+
+        // Declaramos descResumen antes para poder actualizarlo también cuando cambien los spinners
+        Label descResumen = new Label("Selecciona tu configuración favorita");
+        descResumen.getStyleClass().add("footer-desc");
+
+        Runnable actualizarPersonalizada = () -> {
+            int f = spFilas.getValue();
+            int c = spColumnas.getValue();
+            int m = spMinas.getValue();
+
+            // 1. Validar dimensiones máximas (300)
+            if (f > 300 || c > 300) {
+                Alert alertaError = new Alert(AlertType.ERROR, "Tablero no válido: máximo de filas y columnas es 300.");
+                alertaError.showAndWait();
+
+                spFilas.getValueFactory().setValue(Math.min(f, 300));
+                spColumnas.getValueFactory().setValue(Math.min(c, 300));
+                return;
+            }
+
+            // 2. Validar minas máximas (dejando 9 casillas libres)
+            int minasMaximas = (f * c) - 9;
+
+            if (m > minasMaximas) {
+                int minasSeguras = Math.max(1, minasMaximas);
+                Alert alertaError = new Alert(AlertType.ERROR, "Tablero no válido: el número de minas excede el límite seguro (" + minasSeguras + ").");
+                alertaError.showAndWait();
+
+                spMinas.getValueFactory().setValue(minasSeguras);
+                return;
+            }
+
+            // 3. Actualizar objeto y vistas
+            difPersonalizada.setFilas(f);
+            difPersonalizada.setColumnas(c);
+            difPersonalizada.setMinas(m);
+
+            lblDimPers.setText(f + " × " + c);
+            lblMinasPers.setText(m + " minas");
+
+            if (dificultadSeleccionada == difPersonalizada) {
+                actualizarResumen(descResumen);
+            }
+        };
+
+        spFilas.valueProperty().addListener((obs, o, n) -> actualizarPersonalizada.run());
+        spColumnas.valueProperty().addListener((obs, o, n) -> actualizarPersonalizada.run());
+        spMinas.valueProperty().addListener((obs, o, n) -> actualizarPersonalizada.run());
+
+        panelPersonalizado.getChildren().addAll(
+            crearCampoSpinner("Filas (5-300):", spFilas),
+            crearCampoSpinner("Columnas (5-300):", spColumnas),
+            crearCampoSpinner("Minas:", spMinas)
+        );
+
+        grupoDificultades.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
+            boolean esPersonalizada = (newToggle == cardPersonalizada);
+            panelPersonalizado.setVisible(esPersonalizada);
+            panelPersonalizado.setManaged(esPersonalizada);
+        });
+
+        contenedorDificultades.getChildren().addAll(headerDificultades, dificultadesContainer, panelPersonalizado);
 
         Region separador2 = new Region();
         separador2.getStyleClass().add("section-divider");
@@ -126,16 +201,14 @@ public class VistaConfiguracion extends VBox {
         HBox temasContainer = new HBox(16);
         ToggleGroup grupoTemas = new ToggleGroup();
 
-        for (Tema tema: temas) {
-            // En los temas, el layout interno es horizontal (Color -> Texto -> Radio)
+        for (Tema tema : temas) {
             HBox contenido = new HBox(16);
             contenido.setPadding(new Insets(16));
             contenido.setAlignment(Pos.CENTER_LEFT);
 
-            // Simulador de paleta de colores (Un cuadrito visual)
             Region paletteBox = new Region();
             paletteBox.setPrefSize(40, 40);
-            paletteBox.setStyle("-fx-background-color: " + tema.getBg() + ";-fx-background-radius: 4px;"); // Gris temporal
+            paletteBox.setStyle("-fx-background-color: " + tema.getBg() + "; -fx-background-radius: 4px;");
 
             VBox textPart = new VBox(2);
             textPart.setAlignment(Pos.CENTER_LEFT);
@@ -172,10 +245,6 @@ public class VistaConfiguracion extends VBox {
         VBox resumenTextos = new VBox(4);
         Label resumenTitulo = new Label("RESUMEN");
         resumenTitulo.getStyleClass().add("footer-title");
-
-        // Este label debe ser global en tu clase si quieres que actualizarResumen() funcione
-        Label descResumen = new Label("Selecciona tu configuración favorita");
-        descResumen.getStyleClass().add("footer-desc");
         resumenTextos.getChildren().addAll(resumenTitulo, descResumen);
 
         Region spacerFooter = new Region();
@@ -185,15 +254,26 @@ public class VistaConfiguracion extends VBox {
         btnComenzarJuego.getStyleClass().add("btn-comenzar");
 
         btnComenzarJuego.setOnAction(event -> {
+            // Confirmar cualquier valor escrito en los spinners antes de arrancar
+            if (dificultadSeleccionada == difPersonalizada) {
+                try {
+                    spFilas.commitValue();
+                    spColumnas.commitValue();
+                    spMinas.commitValue();
+                } catch (NumberFormatException ignored) {}
+            }
+
             if (dificultadSeleccionada == null) {
-                Alert alert = new Alert(AlertType.WARNING, "No se seleccionó una dificultad");
-                alert.show();
+                new Alert(AlertType.WARNING, "No se seleccionó una dificultad").show();
+                return;
             }
             if (temaSeleccionado == null) {
-                Alert alert = new Alert(AlertType.WARNING, "No se seleccionó un tema");
-                alert.show();
+                new Alert(AlertType.WARNING, "No se seleccionó un tema").show();
+                return;
             }
-            onIniciarPartida.accept(dificultadSeleccionada, temaSeleccionado);
+            if (onIniciarPartida != null) {
+                onIniciarPartida.accept(dificultadSeleccionada, temaSeleccionado);
+            }
         });
 
         contenedorResumen.getChildren().addAll(resumenTextos, spacerFooter, btnComenzarJuego);
@@ -213,17 +293,76 @@ public class VistaConfiguracion extends VBox {
             }
         });
 
-        // Ensamblaje final
         getChildren().addAll(
             contenedorTitulo, separador1,
             contenedorDificultades, separador2,
             contenedorTemas,
-            new Region(), // Un espaciador extra antes del footer si se desea
+            new Region(),
             contenedorResumen
         );
     }
 
-	private void actualizarResumen(Label descResumen) {
+    private void configurarCommitAlPerderFoco(Spinner<Integer> spinner) {
+        spinner.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (!isNowFocused) {
+                try {
+                    spinner.commitValue();
+                } catch (NumberFormatException e) {
+                    spinner.getEditor().setText(String.valueOf(spinner.getValue()));
+                }
+            }
+        });
+    }
+
+    private ToggleButton crearTarjetaDificultad(String badge, String titulo, String dimensiones, String minas, Dificultad data, ToggleGroup group) {
+        VBox contenido = new VBox(4);
+        contenido.setPadding(new Insets(16));
+
+        HBox topRow = new HBox();
+        topRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label lblBadge = new Label(badge);
+        lblBadge.getStyleClass().add("badge-favorito");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        Label radioCircle = new Label();
+        radioCircle.getStyleClass().add("radio-indicator");
+
+        topRow.getChildren().addAll(lblBadge, spacer, radioCircle);
+
+        Label tituloDificultad = new Label(titulo);
+        tituloDificultad.getStyleClass().add("title-dificultad");
+
+        Label dimensionesDificultad = new Label(dimensiones);
+        dimensionesDificultad.getStyleClass().add("desc-dimensiones");
+
+        Label minasDificultad = new Label(minas);
+        minasDificultad.getStyleClass().add("desc-minas");
+
+        contenido.getChildren().addAll(topRow, tituloDificultad, dimensionesDificultad, minasDificultad);
+
+        ToggleButton cardButton = new ToggleButton();
+        cardButton.setGraphic(contenido);
+        cardButton.getStyleClass().add("card-toggle");
+        cardButton.setToggleGroup(group);
+        cardButton.setUserData(data);
+        cardButton.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(cardButton, Priority.ALWAYS);
+
+        return cardButton;
+    }
+
+    private VBox crearCampoSpinner(String etiqueta, Spinner<Integer> spinner) {
+        VBox box = new VBox(4);
+        Label lbl = new Label(etiqueta);
+        lbl.setStyle("-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;");
+        box.getChildren().addAll(lbl, spinner);
+        return box;
+    }
+
+    private void actualizarResumen(Label descResumen) {
         String resumenTxt = "";
 
         if (dificultadSeleccionada != null) {
@@ -242,9 +381,9 @@ public class VistaConfiguracion extends VBox {
         }
 
         descResumen.setText(resumenTxt);
-	}
+    }
 
-	public void setOnIniciarPartida(BiConsumer<Dificultad, Tema> onIniciarPartida) {
-	    this.onIniciarPartida = onIniciarPartida;
-	}
+    public void setOnIniciarPartida(BiConsumer<Dificultad, Tema> onIniciarPartida) {
+        this.onIniciarPartida = onIniciarPartida;
+    }
 }

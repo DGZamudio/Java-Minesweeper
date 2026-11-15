@@ -157,6 +157,13 @@ public class JuegoImp implements Juego {
 
 	@Override
 	public void terminarJuego(Resultado resultado) {
+	    if (resultado == Resultado.GANADOR) {
+			for (int i = 0; i < partida.getDificultad().getFilas(); i++){
+                for (int j = 0; j < partida.getDificultad().getColumnas(); j++){
+                    partida.getTablero()[i][j].setDescubierta(true);
+    			}
+			}
+		}
 	    partida.setResultado(resultado);
 		partida.setTiempo(Duration.between(this.tiempoInicio, Instant.now()));
 	}
